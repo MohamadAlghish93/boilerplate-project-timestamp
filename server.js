@@ -51,7 +51,7 @@ app.get("/api/timestamp/:date?", function (req, res) {
     tmp = new Date();
     toUTC = tmp.toUTCString();
     toUnix = tmp.getTime() / 1000;
-    toUnix =  toUnix.toString().replace('.', '');
+    toUnix =  toUnix.toString();
 
   }
 
