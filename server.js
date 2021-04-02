@@ -24,6 +24,24 @@ app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
 
+app.get("/api/timestamp/", function (req, res) {
+  
+  let date = req.params.date;
+  let toUTC = 0;
+  let toUnix = 0;
+  
+  tmp = new Date();
+  toUTC = tmp.toUTCString();
+  toUnix = tmp.getTime() / 1000;
+  toUnix =  toUnix.toString().replace('.', '');
+
+  let obj = {
+      unix:toUnix, 
+      utc:toUTC
+    }
+    res.json(obj);
+  
+});
 
 app.get("/api/timestamp/:date?", function (req, res) {
   
@@ -51,7 +69,7 @@ app.get("/api/timestamp/:date?", function (req, res) {
     tmp = new Date();
     toUTC = tmp.toUTCString();
     toUnix = tmp.getTime() / 1000;
-    toUnix =  toUnix.toString();
+    toUnix =  toUnix.toString().replace('.', '');
 
   }
 
