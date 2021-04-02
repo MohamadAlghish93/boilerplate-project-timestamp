@@ -24,61 +24,28 @@ app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
 
-app.get("/api/timestamp/", function (req, res) {
-  
-  let date = req.params.date;
-  let toUTC = 0;
-  let toUnix = 0;
-  
-  tmp = new Date();
-  toUTC = tmp.toUTCString();
-  toUnix = tmp.getTime() / 1000;
-  toUnix =  toUnix.toString().replace('.', '');
-
-  let obj = {
-      unix:toUnix, 
-      utc:toUTC
-    }
-    res.json(obj);
-  
+app.get("/api/timestamp/", (req, res) => {
+  res.json({ unix: Date.now(), utc: Date() });
 });
 
-app.get("/api/timestamp/:date?", function (req, res) {
-  
-  let date = req.params.date;
-  let toUTC = 0;
-  let toUnix = 0;
-  if (date != undefined) {
+app.get("/api/timestamp/:date_string", (req, res) => {
+  let dateString = req.params.date_string;
 
-    let tmp = new Date(date);
-    var num = isNaN(parseInt(date)) ? 0 : parseInt(date)
-    if ( tmp !== "Invalid Date" && !isNaN(new Date(tmp))) {
-      toUTC = tmp.toUTCString();
-      toUnix = tmp.getTime() / 1000;
-    } else if (num != 0) {
-      toUnix = num;
-      const unixTime = num;
-      tmp = new Date(unixTime);
-      toUTC = tmp.toUTCString();
-    } 
-    else {
-      return res.json({ error : "Invalid Date" });
-    }         
+  //A 4 digit number is a valid ISO-8601 for the beginning of that year
+  //5 digits or more must be a unix time, until we reach a year 10,000 problem
+  if (/\d{5,}/.test(dateString)) {
+    const dateInt = parseInt(dateString);
+    //Date regards numbers as unix timestamps, strings are processed differently
+    res.json({ unix: dateInt, utc: new Date(dateInt).toUTCString() });
   } else {
+    let dateObject = new Date(dateString);
 
-    tmp = new Date();
-    toUTC = tmp.toUTCString();
-    toUnix = tmp.getTime() / 1000;
-    toUnix =  toUnix.toString().replace('.', '');
-
-  }
-
-  let obj = {
-      unix:toUnix, 
-      utc:toUTC
+    if (dateObject.toString() === "Invalid Date") {
+      res.json({ error: "Invalid Date" });
+    } else {
+      res.json({ unix: dateObject.valueOf(), utc: dateObject.toUTCString() });
     }
-    res.json(obj);
-  
+  }
 });
 
 // listen for requests :)
